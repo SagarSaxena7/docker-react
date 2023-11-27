@@ -1,16 +1,24 @@
 pipeline {
-    agent any
+     agent {
+        label 'master'
+    }
     
     environment {
         DOCKER_IMAGE = 'devimage'
+        DOCKERFILE_PATH = '/var/lib/jenkins/workspace/PipelinetoGitHUB/Dockerfile.dev'
     }
     
     stages {
+        stage('Example Stage') {
+            steps {
+                echo 'Hello, this job is running on the Jenkins master node!'
+                // Add your build steps here
+            }
+            
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Assuming Dockerfile.dev is in the root directory
-                    sh 'docker build -t $DOCKER_IMAGE -f Dockerfile.dev .'
+                    sh "docker build -t $DOCKER_IMAGE -f $DOCKERFILE_PATH ."
                 }
             }
         }
@@ -18,8 +26,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Assuming your npm run test command includes the necessary options
-                    sh 'docker run -e CI=true $DOCKER_IMAGE npm run test -- --coverage'
+                    sh "docker run -e CI=true $DOCKER_IMAGE npm run test -- --coverage"
                 }
             }
         }
